@@ -16,6 +16,12 @@
 
 body {
     font-size: 16px;
+    transition: all .4s;
+    display: flex;
+    flex-direction: column;
+}
+.dummy-element {
+    min-height: 240px;
 }
 
 .headerHr {
@@ -33,6 +39,59 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    transition: all .4s;
+}
+
+#create_quiz_button {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: all .4s;
+}
+
+#quiz_editor {
+    position: relative;
+    margin: 80px auto 0 auto;
+    /* left: 50%;
+    transform: translateX(-50%); */
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(60%);
+    transition: all .7s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+#quiz_editor.visible {
+    transform: translateY(0%);
+    opacity: 1;
+    z-index: 30;
+    background-color: white;
+    transition: all .7s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.question_form_container {
+    border: 1px solid #f0f0f0;
+    padding: 30px;
+    width: 600px;
+}
+
+.question_form_container:not(:first-of-type) {
+    margin-top: 2em;
+}
+
+.question_form {
+    max-height: 0;
+    overflow: hidden;
+    transition: all .4s;
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.question_title {
+    max-width: 80%;
+    transition: opacity .4s;
 }
 
 .info_box,
@@ -69,7 +128,23 @@ body {
     cursor: pointer;
 }
 
-.start_btn button:hover {
+.smaller_green_button {
+    transition: all .4s;
+}
+
+.smaller_green_button > button {
+    font-size: 2em;
+    font-weight: 500;
+    color: #FFF;
+    padding: 10px 20px;
+    outline: none;
+    border: none;
+    background: var(--main-green);
+    transition-duration: .4s;
+    cursor: pointer;
+}
+
+.start_btn button:hover, .smaller_green_button > button:hover {
     box-shadow: 0 4px 80px 0 rgba(0, 0, 0, 0.2),
     0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
@@ -438,7 +513,6 @@ input[type=text]:focus, input[type=number]:focus {
     cursor: pointer;
     margin-top: -32px;
 }
-
 .form_open_icon.active {
     transition: all .4s;
     margin-top: -46px;
@@ -452,6 +526,7 @@ footer {
     bottom: 0;
     display: grid;
     justify-content: center;
+    z-index: 31;
     width: 100%;
     border-top: 5px solid var(--main-green);
     background-color: #FFF;
