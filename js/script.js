@@ -213,8 +213,8 @@ function startTimerLine(time){
     function timer(){
         time += 1;
         time_line.style.width = time + "px";
-        if(time > 549){ //if time value is greater than 549
-            clearInterval(counterLine); //clear counterLine
+        if(time > 549){ 
+            clearInterval(counterLine);
         }
     }
 }
