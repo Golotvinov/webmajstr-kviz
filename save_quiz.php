@@ -2,7 +2,7 @@
 
 $data = $_POST['json'];
 
-$url = $_SERVER['DOCUMENT_ROOT'].'/zip/js/otazky.json';
+$url = 'zip/js/otazky.json';
 
 $file = fopen($url, 'w');
 fwrite($file, $data);
