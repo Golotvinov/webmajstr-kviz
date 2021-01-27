@@ -40,4 +40,21 @@ if ($zip -> open($zipname, ZipArchive::CREATE))
     $zip -> close();
 
 }
+
+if (file_exists($zipname))
+    {
+        
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename='.basename($zipname));
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+
+        ob_clean();
+        flush();
+
+        die();
+    }
 ?>

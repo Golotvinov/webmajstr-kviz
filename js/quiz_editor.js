@@ -75,6 +75,7 @@ class QuizEditor
 
         var answer = options[parseInt(formInputs[5].value) - 1];
 
+        // Anti-Troll Safeguard.
         if (answer < 1)
             answer = 1;
         if (answer > 4)
