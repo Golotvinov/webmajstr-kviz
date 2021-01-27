@@ -10,6 +10,31 @@ const time_line = document.querySelector("header .time_line");
 const timeText = document.querySelector(".timer .time_left_txt");
 const timeCount = document.querySelector(".timer .timer_sec");
 
+async function downloadFile()
+{
+    var response = await fetch(questionFilePath);
+
+    if (response.status != 200)
+    {
+        throw new Error("Chyba. Nelze načíst soubor " + questionFilePath);
+    }
+
+    var data = await response.text();
+
+    return data;
+}
+
+async function readQuestions()
+{
+    try {
+        var jsonString = await downloadFile();
+        questions = JSON.parse(jsonString);
+    } catch (e) {
+        console.log(e.message);
+    }
+}
+readQuestions();
+
 start_btn.onclick = ()=>{
     info_box.classList.add("activeInfo");
 }

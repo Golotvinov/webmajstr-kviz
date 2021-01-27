@@ -71,14 +71,39 @@
         </div>
     </div>
 
+    <div id="quiz_editor">
+        <div id="que_num_1" class="question_form_container">
+            <h3 class="question_title"></h3>
+            <div class="question_form">
+                <form>
+                    <label for="question_title">Znění</label>
+                    <input type="text" name="question_title">
+
+                    <label for="option_1">Možnosti</label>
+                    <input type="text" name="option_1">
+                    <input type="text" name="option_2">
+                    <input type="text" name="option_3">
+                    <input type="text" name="option_4">
+
+                    <label for="answer">Správná odpověď</label>
+                    <input type="number" name="answer" min="1" max="4">
+
+                    <button type="button" class="button save_button" question-num="1">Uložit</button>
+                </form>
+            </div>
+            <div class="icon-down-open form_open_icon"></div>
+        </div>
+        <button id="back_to_quiz_button" class="button">Zpět</button>
+        <button id="download_quiz_button" class="button">Stáhnout kvíz</button>
+    </div>
+
     <footer>
         <p>&copy; Webmajstr <span id="currentYear"></span> | Vytvořil A. D. Golotvinov</p>
         <img src="http://webmajstr.golotvinov.com/img/KITTVlogoBW.svg" class="kittvLogo" alt="logo KITTV">
     </footer>
 
-
-    <script src="js/otazky.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/quiz_editor.js"></script>
 
 </body>
 
