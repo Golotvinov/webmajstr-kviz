@@ -378,6 +378,73 @@ section .option_list .option .icon{
     background: var(--red);
 }
 
+/* ============  FORM STYLES  =========== */
+
+input[type=text], input[type=number] {
+    width: 100%;
+    min-width: 330px;
+    padding: 12px 0;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 2px solid var(--main-green);
+    font-family: "Poppins", sans-serif;
+}
+
+::placeholder {
+    font-family: "Poppins", sans-serif;
+}
+
+input[type=text]:first-child, input[type=number]:first-child {
+    margin-right: 30px;
+}
+
+input[type=text]:focus, input[type=number]:focus {
+    outline: none;
+}
+
+.button {
+    background-color: var(--main-green);
+    border: none;
+    color: #FFF;
+    font-family: "Poppins", sans-serif;
+    padding: 15px 32px;
+    font-size: 1em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    float: left;
+}
+
+.button:hover {
+    box-shadow: 0 5px 18px 0 rgba(0, 0, 0, 0.24), 0 17px 60px 0 rgba(0, 0, 0, 0.19);
+    background-color: var(--secondary-green);
+}
+
+#back_to_quiz_button, #download_quiz_button {
+    display: none;
+    float: none;
+    max-width: 60%;
+    min-width: 60%;
+    margin: 2em auto 0 auto;
+}
+
+.form_open_icon {
+    float: right;
+    font-size: 24px;
+    transition: all .4s;
+    cursor: pointer;
+    margin-top: -32px;
+}
+
+.form_open_icon.active {
+    transition: all .4s;
+    margin-top: -46px;
+    transform: rotate(180deg);
+}
+
 /* ==============  FOOTER  ============== */
 
 footer {
