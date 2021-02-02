@@ -1,4 +1,3 @@
-//selecting all required elements
 const start_btn = document.querySelector(".start_btn button");
 const info_box = document.querySelector(".info_box");
 const exit_btn = info_box.querySelector(".buttons .quit");
@@ -10,6 +9,7 @@ const time_line = document.querySelector("header .time_line");
 const timeText = document.querySelector(".timer .time_left_txt");
 const timeCount = document.querySelector(".timer .timer_sec");
 const questionFilePath = 'js/otazky.json';
+let questions = [];
 
 async function downloadFile()
 {
@@ -17,7 +17,7 @@ async function downloadFile()
 
     if (response.status != 200)
     {
-        throw new Error("Error reading file " + questionFilePath);
+        throw new Error("Chyba. Nelze načíst soubor " + questionFilePath);
     }
 
     var data = await response.text();
@@ -30,8 +30,10 @@ async function readQuestions()
     try {
         var jsonString = await downloadFile();
         questions = JSON.parse(jsonString);
+        return true;
     } catch (e) {
         console.log(e.message);
+        return false;
     }
 }
 readQuestions();
@@ -214,7 +216,7 @@ function startTimerLine(time){
     function timer(){
         time += 1;
         time_line.style.width = time + "px";
-        if(time > 549){ 
+        if(time > 549){
             clearInterval(counterLine);
         }
     }
