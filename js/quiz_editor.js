@@ -4,11 +4,10 @@ const createQuizBtnContainer = createQuizBtn.parentElement;
 const quizEditorContainer = document.querySelector("#quiz_editor");
 const backToQuizButton = document.querySelector("#back_to_quiz_button");
 const downloadQuizButton = document.querySelector("#download_quiz_button");
-
-function easeInOutSine(x)
-{
-    return -(Math.cos(3.14159 * x) - 1) / 2;
-}
+const addQuestionButton = document.querySelector("#plus_button");
+const uploadQuizInput = document.querySelector("#upload_quiz_button");
+const loadQuizButton = document.querySelector("#load_quiz_button");
+var quizEditor;
 
 class QuizEditor
 {
@@ -30,7 +29,7 @@ class QuizEditor
             questionContainer.children[0].innerHTML =
                 "Otázka: " + question["question"];
             quizEditorContainer.
-                insertBefore(questionContainer, backToQuizButton);
+            insertBefore(questionContainer, addQuestionButton);
 
             this.fillForm(
                 document.querySelector("#" + questionContainer.id + " form"),
@@ -52,8 +51,11 @@ class QuizEditor
             question["options"].findIndex(x => x == question["answer"]) + 1;
         formInputs[5].value = ansIndex;
 
-        var saveButton = formContainer.lastElementChild;
+        var saveButton =
+            formContainer.children[formContainer.children.length - 2];
+        var removeButton = formContainer.lastElementChild;
         saveButton.setAttribute("question-num", question["numb"]);
+        removeButton.setAttribute("question-num", question["numb"]);
     }
 
     saveQuestion(clickedButton)
@@ -75,7 +77,6 @@ class QuizEditor
 
         var answer = options[parseInt(formInputs[5].value) - 1];
 
-        // Anti-Troll Safeguard.
         if (answer < 1)
             answer = 1;
         if (answer > 4)
@@ -107,6 +108,82 @@ class QuizEditor
         title.innerHTML = newTitle;
         title.style.opacity = 1;
     }
+
+    async addNewQuestion()
+    {
+        var lastNum = this.questions.length;
+        var newQuestion = {
+            numb: lastNum + 1,
+            question: "",
+            answer: "",
+            options: ["", "", "", ""]
+        };
+        this.questions.push(newQuestion);
+        questions = this.questions;
+
+        var questionContainer =
+            document.querySelector("#que_num_1").cloneNode(true);
+        questionContainer.id = "que_num_" + (lastNum + 1);
+        questionContainer.children[0].innerHTML = "Otázka: ";
+
+        quizEditorContainer.insertBefore(questionContainer, addQuestionButton);
+
+        var formContainer = questionContainer.children[1].firstElementChild;
+        var formInputs =
+            Array.from(formContainer).filter(x => x.tagName == "INPUT");
+        formInputs.forEach(input => {
+            input.value = null;
+        });
+        var saveButton =
+            formContainer.children[formContainer.children.length - 2];
+        var removeButton = formContainer.lastElementChild;
+        saveButton.setAttribute("question-num", lastNum + 1);
+        saveButton.setAttribute("has-listener", "false");
+        removeButton.setAttribute("question-num", lastNum + 1);
+        removeButton.setAttribute("has-listener", "false");
+
+        var openIcon = questionContainer.lastElementChild;
+        openIcon.setAttribute("has-listener", "false");
+
+        AddFormIconListeners();
+        AddSaveButtonListeners();
+        AddRemoveButtonListeners();
+        CheckRemovalValidity();
+
+        questionContainer.classList.toggle("visible");
+        await new Promise(x => setTimeout(x, 100));
+        questionContainer.classList.toggle("visible");
+    }
+
+    removeQuestion(clickedButton)
+    {
+        var number = clickedButton.getAttribute("question-num");
+        var parent = document.querySelector("#que_num_" + number);
+        this.questions.splice(number - 1, 1);
+
+        this.questions.forEach(question => {
+            if (question["numb"] > number)
+            {
+                var questionContainer =
+                    document.querySelector("#que_num_" + question["numb"]);
+                var formContainer =
+                    questionContainer.children[1].firstElementChild;
+
+                var saveButton =
+                    formContainer.children[formContainer.children.length - 2];
+                saveButton.setAttribute("question-num", question["numb"] - 1);
+
+                var removeButton = formContainer.lastElementChild;
+                removeButton.setAttribute("question-num", question["numb"] - 1);
+                questionContainer.id = "que_num_" + (question["numb"] - 1);
+
+                question["numb"] -= 1;
+            }
+        });
+
+        parent.remove();
+        CheckRemovalValidity();
+    }
 }
 
 async function ShowQuizEditor()
@@ -114,6 +191,7 @@ async function ShowQuizEditor()
     quizEditorContainer.style.display = "flex";
     backToQuizButton.style.display = "block";
     downloadQuizButton.style.display = "block";
+    addQuestionButton.style.display = "block";
 
     await new Promise(x => setTimeout(x, 10));
 
@@ -134,61 +212,100 @@ async function HideQuizEditor()
     quizEditorContainer.style.display = "none";
     backToQuizButton.style.display = "none";
     downloadQuizButton.style.display = "none";
+    addQuestionButton.style.display = "none";
+}
+
+function ToggleForm(formContainer)
+{
+    if (formContainer.style.maxHeight)
+    {
+        formContainer.style.maxHeight = null;
+        formContainer.style.marginTop = null;
+    }
+    else
+    {
+        formContainer.style.maxHeight = formContainer.scrollHeight + 'px';
+        formContainer.style.marginTop = "1em";
+    }
 }
 
 function AddFormIconListeners()
 {
     var formAccordionIcons = document.querySelectorAll('.form_open_icon');
     formAccordionIcons.forEach(icon => {
-        icon.addEventListener("click", function() {
-            this.classList.toggle("active");
+        if (icon.getAttribute("has-listener") == "false")
+        {
+            icon.setAttribute("has-listener", "true");
+            icon.addEventListener("click", function() {
+                this.classList.toggle("active");
 
-            var formContainer = this.previousElementSibling;
-            if (formContainer.style.maxHeight)
-            {
-                formContainer.style.maxHeight = null;
-                formContainer.style.marginTop = null;
-            }
-            else
-            {
-                formContainer.style.maxHeight = formContainer.scrollHeight + 'px';
-                formContainer.style.marginTop = "1em";
-            }
+                var formContainer = this.previousElementSibling;
+                ToggleForm(formContainer);
 
-        }, false);
+            }, false);
+        }
     });
 }
 
-function AddSaveButtonListeners(quizEditor)
+function AddSaveButtonListeners()
 {
     var saveButtons = document.querySelectorAll(".save_button");
     saveButtons.forEach(button => {
-        button.addEventListener("click", function() {
-            quizEditor.saveQuestion(this);
-        })
+        if (button.getAttribute("has-listener") == "false")
+        {
+            button.setAttribute("has-listener", "true");
+            button.addEventListener("click", function() {
+                quizEditor.saveQuestion(this);
+            });
+        }
     });
 }
 
-function ReadFilesList(fileName)
+function AddRemoveButtonListeners()
 {
-    var reader = new FileReader();
-    reader.onload = function(progressEvent)
-    {
-        var lines = this.result.split("\n");
-    }
-    reader.readAsText(fileName);
+    var removeButtons = document.querySelectorAll(".remove_button");
+    removeButtons.forEach(button => {
+        if (button.getAttribute("has-listener") == "false")
+        {
+            button.setAttribute("has-listener", "true");
+            button.addEventListener("click", function() {
+                quizEditor.removeQuestion(this);
+            });
+        }
+    });
+}
 
-    return lines;
+function CheckRemovalValidity()
+{
+    var removeButtons = document.querySelectorAll(".remove_button");
+    if (quizEditor.questions.length <= 5)
+    {
+        removeButtons.forEach(button => {
+            if (!button.classList.contains("inactive"))
+                button.classList.add("inactive");
+        });
+    }
+    else
+    {
+        removeButtons.forEach(button => {
+            if (button.classList.contains("inactive"))
+                button.classList.remove("inactive");
+        });
+    }
 }
 
 createQuizBtn.onclick = () =>
 {
-    var quizEditor = new QuizEditor(questions);
+    if (!quizEditor)
+        quizEditor = new QuizEditor(questions);
+
     if (document.querySelectorAll(".question_form_container").length <= 1)
     {
         quizEditor.fillQuestionList();
         AddFormIconListeners();
-        AddSaveButtonListeners(quizEditor);
+        AddSaveButtonListeners();
+        AddRemoveButtonListeners();
+        CheckRemovalValidity();
     }
     ShowQuizEditor();
 }
@@ -201,17 +318,54 @@ backToQuizButton.onclick = () =>
 downloadQuizButton.onclick = () =>
 {
     var data = new FormData();
-    var jsonString = JSON.stringify(questions);
+    var jsonString = JSON.stringify(questions, null, 2);
     data.append('json', jsonString);
 
     var request = new XMLHttpRequest();
     request.open("POST", "../save_quiz.php", false);
     request.onload = function() {
         console.log(this.response);
+        const anchor = document.createElement("a");
+        anchor.setAttribute("href", "otazky.json");
+        anchor.setAttribute("download", "otazky.json");
+        anchor.click();
     }
     request.send(data);
+}
 
-    var pathArray = window.location.pathname.split('/');
-    console.log(pathArray[0] + "/site.zip");
-    window.location.href = pathArray[0] + "/site.zip";
+addQuestionButton.onclick = () =>
+{
+    quizEditor.addNewQuestion();
+}
+
+loadQuizButton.onclick = () =>
+{
+    if (!quizEditor)
+        quizEditor = new QuizEditor(questions);
+
+    var uploadedFiles = uploadQuizInput.files;
+    if (uploadedFiles.length <= 0)
+        return;
+
+    var reader = new FileReader();
+
+    reader.onload = function(event) {
+        console.log(event);
+        try {
+            quizEditor.questions = JSON.parse(event.target.result);
+            questions = quizEditor.questions;
+        } catch (e) {
+            console.log(e.Message);
+            alert("Chybný formát souboru.");
+        }
+    };
+
+    reader.readAsText(uploadedFiles[0]);
+
+    var questionContainers =
+        document.querySelectorAll(".question_form_container");
+    questionContainers.forEach(container => {
+        if (container.id != "que_num_1")
+            container.remove();
+    });
 }
